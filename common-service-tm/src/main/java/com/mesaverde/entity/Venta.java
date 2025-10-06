@@ -23,15 +23,8 @@ public class Venta {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
-    @Column(name = "tipo_pago")
-    private String tipoPago;
 
     private LocalDateTime fecha;
     private BigDecimal total;

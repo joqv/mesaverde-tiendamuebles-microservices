@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class VentaResponse {
 
-    private String nombreCliente;
+    //private String nombreCliente;
     private String nombreUsuario;
     private LocalDateTime fecha;
     private BigDecimal total;

@@ -6,11 +6,7 @@ import com.mesaverde.dto.response.VentaResponse;
 import com.mesaverde.entity.Venta;
 import com.mesaverde.repository.VentaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +21,7 @@ public class VentaService {
                 new BusinessException("venta.not.found"));
 
         VentaResponse response = VentaResponse.builder()
-                .nombreCliente(venta.getCliente().getNombre())
+                //.nombreCliente(venta.getCliente().getNombre())
                 .nombreUsuario(venta.getUsuario().getNombre())
                 .fecha(venta.getFecha())
                 .total(venta.getTotal())
