@@ -1,23 +1,46 @@
 package com.mesaverde.controller;
 
-import com.mesaverde.entity.Cliente;
-import com.mesaverde.repository.ClienteRepository;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.mesaverde.entity.Cliente;
 
+import com.mesaverde.service.ClienteService;
+
+import java.util.List;
 @RestController
-@RequestMapping(value = "/clientes")
-@RequiredArgsConstructor
+@RequestMapping("/cliente")
 public class ClienteController {
 
-    private final ClienteRepository clienteRepository;
-
-    @GetMapping
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+    @Autowired
+    private ClienteService service;
+    
+    @GetMapping("/listartodo")
+    public List<Cliente> getListCliente(){
+    	
+    	return service.getListCliente();
+    }
+    
+    
+    @GetMapping("/{clienteId}")
+    public Cliente gestBuscarCliente (Integer id) {
+    	return service.getBuscarCliente(id);
+    }
+    @PutMapping("/")
+    public Cliente updateCliente(Cliente cliente) {
+    	
+    	return service.updateCliente(cliente);
+    	
+    }
+    
+    @DeleteMapping("/{clienteId}")
+    public void deleteCliente(Integer id) {
+    	
+    	service.deleteCliente(id);
     }
 }

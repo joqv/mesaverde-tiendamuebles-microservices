@@ -5,7 +5,7 @@ public class CommonServiceTmApplication
 {
     public static void main( String[] args )
     {
-        System.out.println( "Proyecto!" );
+        System.out.println( "Proyecto Mueble!" );
     }
 }
 
