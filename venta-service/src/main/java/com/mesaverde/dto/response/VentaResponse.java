@@ -18,3 +18,5 @@ public class VentaResponse {
     private BigDecimal total;
     private List<Cliente> clientes;
 }
+
+
