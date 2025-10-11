@@ -22,7 +22,7 @@ public class Producto {
     private String nombre;
     private BigDecimal precio;
     private String tipo;
-    private int stock;
+    private Integer stock;
     private String descripcion;
     private String imagen;
 
