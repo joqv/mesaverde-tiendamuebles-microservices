@@ -14,6 +14,7 @@ public class CategoriaService {
     private final CategoriaRepository categoriaRepository;
 
     public List<Categoria> listarCategorias() {
+
         return categoriaRepository.findAll();
     }
 }
