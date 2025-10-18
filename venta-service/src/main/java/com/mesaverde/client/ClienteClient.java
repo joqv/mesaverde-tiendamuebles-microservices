@@ -9,7 +9,7 @@ import java.util.List;
 @FeignClient(name = "cliente-service", url = "http://localhost:8080/cliente-service")
 public interface ClienteClient {
 
-    @GetMapping("/clientes")
+    @GetMapping("/cliente/listartodo")
     List<Cliente> getClientes();
 
 }
