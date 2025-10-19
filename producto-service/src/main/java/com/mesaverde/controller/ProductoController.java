@@ -1,12 +1,16 @@
 package com.mesaverde.controller;
 
+import com.mesaverde.dto.request.VentaProdRequest;
+import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Producto;
 import com.mesaverde.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/productos")
@@ -49,4 +53,25 @@ public class ProductoController {
     public ResponseEntity<List<Producto>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(productoService.buscarXNombre(nombre));
     }
+    
+    // de venta
+	
+	@PostMapping("/descProducto")
+	public void descProducto(@RequestBody List<DetalleVenta> detalles) {
+		
+		/*
+		List<DetalleVenta> detalles = ventaProdRequest.getProductos().stream().map(p -> {
+		
+            DetalleVenta detalle = new DetalleVenta();
+            detalle.setProductoId(p.getId());
+            detalle.setCantidad(p.getCantidad());
+            detalle.setPrecioUnitario(BigDecimal.valueOf(p.getPrecio_unitario()));
+            return detalle;
+        }).collect(Collectors.toList());
+
+		 */
+
+		productoService.descProducto(detalles);
+	}
+    
 }
