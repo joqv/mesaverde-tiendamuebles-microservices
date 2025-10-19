@@ -1,9 +1,11 @@
 package com.mesaverde.service;
 
+import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Producto;
 import com.mesaverde.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +51,22 @@ public class ProductoService {
         return productoRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
+    // de venta
+    
+    @Transactional
+    public void descProducto(List<DetalleVenta> detalles) {
+       
 
+        // 2. Procesar cada detalle
+        for (DetalleVenta detalle : detalles) {
+            // 2.1 Descontar stock
+        	productoRepository.descontarProducto(
+                detalle.getProductoId(),
+                detalle.getCantidad(),
+                detalle.getPrecioUnitario()
+            );
+        }
+    }
 
 
 

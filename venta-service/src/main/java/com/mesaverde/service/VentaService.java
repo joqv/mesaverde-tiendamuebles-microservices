@@ -2,6 +2,7 @@ package com.mesaverde.service;
 
 import com.error.springerrorhandler.exceptions.BusinessException;
 import com.mesaverde.client.ClienteClient;
+import com.mesaverde.client.ProductoClient;
 import com.mesaverde.dto.response.VentaResponse;
 import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Producto;
@@ -20,6 +21,7 @@ public class VentaService {
 
     private final VentaRepository ventaRepository;
     private final ClienteClient clienteClient;
+    private final ProductoClient productoClient;
     
     public List<Producto> todosProductos(){
     	return ventaRepository.todosProductos();
@@ -51,14 +53,20 @@ public class VentaService {
         venta.setId(ventaId);
 
         // 2. Procesar cada detalle
+        
+        productoClient.descontarProducto(detalles);
+        
         for (DetalleVenta detalle : detalles) {
             // 2.1 Descontar stock
-            ventaRepository.descontarProducto(
-                detalle.getProductoId(),
-                detalle.getCantidad(),
-                detalle.getPrecioUnitario(),
-                venta.getUsuario() != null ? venta.getUsuario().getNombre() : "sistema"
-            );
+            
+        	//ventaRepository.descontarProducto(
+            //    detalle.getProductoId(),
+             //   detalle.getCantidad(),
+             //   detalle.getPrecioUnitario(),
+             //   venta.getUsuario() != null ? venta.getUsuario().getNombre() : "sistema"
+            //);
+        	
+        	
 
             // 2.2 Registrar detalle
             ventaRepository.registrarDetalleVenta(
