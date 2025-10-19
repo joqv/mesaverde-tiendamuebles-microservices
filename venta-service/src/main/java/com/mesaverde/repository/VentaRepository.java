@@ -20,8 +20,8 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     @Procedure(procedureName = "sp_descontar_producto")
     void descontarProducto(Integer p_id_producto, Integer p_cantidad, BigDecimal p_precio_unitario, String p_usuario);
 
-    @Query(value = "CALL sp_registrar_venta(:usuarioId, :total)", nativeQuery = true)
-    Integer registrarVenta(@Param("usuarioId") Integer usuarioId, @Param("total") BigDecimal total);
+    @Procedure(procedureName = "sp_registrar_venta")
+    Integer registrarVenta(@Param("p_usuario_id") Integer usuarioId, @Param("p_total") BigDecimal total);
 
     @Procedure(procedureName = "sp_registrar_detalle_venta")
     void registrarDetalleVenta(Integer ventaId, Integer productoId, Integer cantidad, BigDecimal precioUnitario);
