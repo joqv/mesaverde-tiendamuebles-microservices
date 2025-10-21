@@ -1,4 +1,4 @@
-package com.bankito.repository;
+package com.mesaverde.repository;
 
 import com.mesaverde.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;

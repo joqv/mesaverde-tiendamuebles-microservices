@@ -1,4 +1,4 @@
-package com.bankito.dto;
+package com.mesaverde.dto;
 
 import com.mesaverde.entity.Usuario;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

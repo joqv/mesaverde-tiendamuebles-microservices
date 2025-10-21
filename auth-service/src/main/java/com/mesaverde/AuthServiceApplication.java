@@ -1,13 +1,13 @@
-package com.bankito;
+package com.mesaverde;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ResourseServerApplication {
+public class AuthServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ResourseServerApplication.class, args);
+        SpringApplication.run(AuthServiceApplication.class, args);
     }
 
 }

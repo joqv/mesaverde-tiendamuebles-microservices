@@ -8,12 +8,13 @@ import lombok.Setter;
 
 import java.util.Set;
 
-@Entity
+
 @Table(name = "usuarios")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Usuario {
 
     @Id
