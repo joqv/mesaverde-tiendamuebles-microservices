@@ -153,8 +153,7 @@ DELIMITER $$
 
 CREATE PROCEDURE sp_registrar_venta (
   IN p_usuario_id INT,
-  IN p_total DECIMAL(10,2),
-  OUT p_id_venta INT
+  IN p_total DECIMAL(10,2)
 )
 BEGIN
   -- Insertar la venta
@@ -162,7 +161,8 @@ BEGIN
   VALUES (p_usuario_id, p_total);
 
   -- Obtener el ID generado
-  SET p_id_venta = LAST_INSERT_ID();
+  SELECT LAST_INSERT_ID() AS id_venta;
+
 END$$
 
 DELIMITER ;
