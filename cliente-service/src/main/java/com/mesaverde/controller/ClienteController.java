@@ -4,13 +4,17 @@ package com.mesaverde.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mesaverde.entity.Cliente;
 
 import com.mesaverde.service.ClienteService;
+
 
 import java.util.List;
 @RestController
@@ -28,11 +32,19 @@ public class ClienteController {
     
     
     @GetMapping("/{clienteId}")
-    public Cliente gestBuscarCliente (Integer id) {
-    	return service.getBuscarCliente(id);
+    public Cliente buscarCliente(@PathVariable("clienteId") Integer clienteId) {
+        return service.getBuscarCliente(clienteId);
     }
-    @PutMapping("/")
-    public Cliente updateCliente(Cliente cliente) {
+    
+    @PutMapping
+    public Cliente updateCliente(@RequestBody Cliente cliente) {
+    	
+    	return service.updateCliente(cliente);
+    	
+    }
+    
+    @PostMapping
+    public Cliente guardarCliente(@RequestBody Cliente cliente) {
     	
     	return service.updateCliente(cliente);
     	

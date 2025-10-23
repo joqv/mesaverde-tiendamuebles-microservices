@@ -1,6 +1,6 @@
 package com.mesaverde.service;
 
-import com.error.springerrorhandler.exceptions.BusinessException;
+//import com.error.springerrorhandler.exceptions.BusinessException;
 import com.mesaverde.client.ClienteClient;
 import com.mesaverde.client.ProductoClient;
 import com.mesaverde.dto.response.VentaResponse;
@@ -8,6 +8,9 @@ import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Producto;
 import com.mesaverde.entity.Venta;
 import com.mesaverde.repository.VentaRepository;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -30,7 +33,7 @@ public class VentaService {
     public VentaResponse obtenerVenta(Integer id) {
 
         Venta venta = ventaRepository.findById(id).orElseThrow(() ->
-                new BusinessException("venta.not.found"));
+                new RuntimeException("venta.not.found"));
 
         VentaResponse response = VentaResponse.builder()
                 //.nombreCliente(venta.getCliente().getNombre())
@@ -42,8 +45,15 @@ public class VentaService {
 
         return response;
     }
+    //Ingresa al fallback cuando se termina los reintentos
+    public void fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles,Throwable ex) {
+    	throw new RuntimeException("Error al realizar la venta");
+			
+	}
     
     @Transactional
+    @CircuitBreaker(name = "procesarVentaRepository", fallbackMethod = "fallbackProcesarVenta") 
+	@Retry(name = "procesarVentaRepository")
     public void procesarVenta(Venta venta, List<DetalleVenta> detalles) {
         // 1. Registrar la venta
     	Integer ventaId = ventaRepository.registrarVenta(
