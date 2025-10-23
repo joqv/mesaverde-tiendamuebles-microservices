@@ -15,11 +15,10 @@ public class GatewayCorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://localhost:49309");  // <-- frontend origin here
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
-
 
         source.registerCorsConfiguration("/**", config);
 

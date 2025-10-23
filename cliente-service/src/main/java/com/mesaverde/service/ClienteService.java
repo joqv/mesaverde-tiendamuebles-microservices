@@ -24,13 +24,12 @@ public class ClienteService {
      
      public Cliente getBuscarCliente(Integer id) {
     	 
-    	 return clienteRepository.getById(id);
+    	 return clienteRepository.findById(id).get();
      }
       
      public Cliente updateCliente(Cliente cliente) {
     	 return clienteRepository.save(cliente);
      }
-     
      
      
     public void deleteCliente(Integer id) {
