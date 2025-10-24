@@ -1,6 +1,6 @@
 package com.mesaverde.service;
 
-//import com.error.springerrorhandler.exceptions.BusinessException;
+import com.error.springerrorhandler.exceptions.BusinessException;
 import com.mesaverde.client.ClienteClient;
 import com.mesaverde.client.ProductoClient;
 import com.mesaverde.dto.response.VentaResponse;
@@ -33,7 +33,7 @@ public class VentaService {
     public VentaResponse obtenerVenta(Integer id) {
 
         Venta venta = ventaRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("venta.not.found"));
+                new BusinessException("venta.not.found"));
 
         VentaResponse response = VentaResponse.builder()
                 //.nombreCliente(venta.getCliente().getNombre())
@@ -45,14 +45,9 @@ public class VentaService {
 
         return response;
     }
-    //Ingresa al fallback cuando se termina los reintentos
-    public void fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles,Throwable ex) {
-    	throw new RuntimeException("Error al realizar la venta");
-			
-	}
     
     @Transactional
-    @CircuitBreaker(name = "procesarVentaRepository", fallbackMethod = "fallbackProcesarVenta") 
+    @CircuitBreaker(name = "procesarVentaRepository", fallbackMethod = "fallbackProcesarVenta")
 	@Retry(name = "procesarVentaRepository")
     public void procesarVenta(Venta venta, List<DetalleVenta> detalles) {
         // 1. Registrar la venta
@@ -86,6 +81,12 @@ public class VentaService {
                 detalle.getPrecioUnitario()
             );
         }
+    }
+
+    //Ingresa al fallback cuando se termina los reintentos
+    public void fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles,Throwable ex) {
+        throw new RuntimeException("No se puede realizar la venta en este momento. Intentalo más tarde.");
+
     }
     
 }
