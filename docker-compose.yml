@@ -1,0 +1,104 @@
+services:
+  db:
+    image: mysql
+    container_name: db_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mundomuebles
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD: root
+    volumes:
+      - mysql_data_tm:/var/lib/mysql
+      - ./script_db_mundomuebles.sql:/docker-entrypoint-initdb.d/script_db_mundomuebles.sql:ro
+    ports:
+      - "3307:3306"
+    restart: always
+    networks:
+      - net_mesaverde_ms
+  
+  config-server:
+    container_name: config_server
+    build:
+      context: ./config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config-repo:/opt/config:ro
+    restart: always
+    networks:
+      - net_mesaverde_ms
+
+  eureka-server:
+    container_name: eureka_server
+    build:
+      context: ./eureka-server
+    ports:
+      - "8761:8761"
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+  
+  producto-service:
+    container_name: producto_service
+    build:
+      context: .
+      dockerfile: ./producto-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+  
+
+  cliente-service:
+    container_name: cliente_service
+    build:
+      context: .
+      dockerfile: ./cliente-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+  
+  venta-service:
+    container_name: venta_service
+    build:
+      context: .
+      dockerfile: ./venta-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+      - producto-service
+      - cliente-service
+
+  api-gateway:
+    container_name: api_gateway
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - eureka-server
+      - config-server
+
+volumes:
+  mysql_data_tm:
+
+networks:
+  net_mesaverde_ms:
+    external: true
+    

@@ -11,7 +11,7 @@ import com.mesaverde.entity.DetalleVenta;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@FeignClient(name = "producto-service", url = "http://localhost:8080/producto-service")
+@FeignClient(name = "producto-service", url = "http://api-gateway:8080/producto-service")
 public interface ProductoClient {
 	
 	@PostMapping("/productos/descProducto")

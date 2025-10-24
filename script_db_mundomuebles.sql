@@ -1,14 +1,81 @@
+SET NAMES 'utf8mb4';
+SET CHARACTER SET utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS mundomuebles;
 USE mundomuebles;
 
-DROP TABLE IF EXISTS usuarios;
+CREATE TABLE rol (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
+
+-- Tabla usuarios
 CREATE TABLE usuarios (
-  id INT NOT NULL AUTO_INCREMENT,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  nombre VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE,
-  PRIMARY KEY (id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100),
+    email VARCHAR(100),
+    estado TINYINT DEFAULT 1 NOT NULL
+);
+
+-- Tabla usuario_rol (relación muchos a muchos usuarios-rol)
+CREATE TABLE usuario_rol (
+    usuario_id INT NOT NULL,
+    rol_id INT NOT NULL,
+    PRIMARY KEY(usuario_id, rol_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (rol_id) REFERENCES rol(id)
+);
+
+
+CREATE TABLE oauth2_authorization (
+    id VARCHAR(100) PRIMARY KEY,
+    registered_client_id VARCHAR(100) NOT NULL,
+    principal_name VARCHAR(200) NOT NULL,
+    authorization_grant_type VARCHAR(100) NOT NULL,
+    authorized_scopes VARCHAR(1000),
+    attributes TEXT,
+    state VARCHAR(500),
+    authorization_code_value TEXT,
+    authorization_code_issued_at TIMESTAMP,
+    authorization_code_expires_at TIMESTAMP,
+    authorization_code_metadata TEXT,
+    access_token_value TEXT,
+    access_token_issued_at TIMESTAMP,
+    access_token_expires_at TIMESTAMP,
+    access_token_metadata TEXT,
+    access_token_type VARCHAR(100),
+    access_token_scopes VARCHAR(1000),
+    oidc_id_token_value TEXT,
+    oidc_id_token_issued_at TIMESTAMP,
+    oidc_id_token_expires_at TIMESTAMP,
+    oidc_id_token_metadata TEXT,
+    refresh_token_value TEXT,
+    refresh_token_issued_at TIMESTAMP,
+    refresh_token_expires_at TIMESTAMP,
+    refresh_token_metadata TEXT
+);
+CREATE TABLE oauth2_authorization_consent (
+    registered_client_id VARCHAR(100) NOT NULL,
+    principal_name VARCHAR(200) NOT NULL,
+    authorities VARCHAR(1000) NOT NULL,
+    PRIMARY KEY (registered_client_id, principal_name)
+);
+CREATE TABLE oauth2_registered_client (
+    id VARCHAR(100) PRIMARY KEY,
+    client_id VARCHAR(100) NOT NULL,
+    client_id_issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    client_secret VARCHAR(200),
+    client_secret_expires_at TIMESTAMP,
+    client_name VARCHAR(200) NOT NULL,
+    client_authentication_methods VARCHAR(1000) NOT NULL,
+    authorization_grant_types VARCHAR(1000) NOT NULL,
+    redirect_uris VARCHAR(1000),
+    post_logout_redirect_uris VARCHAR(1000),
+    scopes VARCHAR(1000),
+    client_settings VARCHAR(2000),
+    token_settings VARCHAR(2000)
 );
 
 DROP TABLE IF EXISTS categorias;
@@ -70,12 +137,15 @@ CREATE TABLE clientes (
 
 -- datos
 
-INSERT INTO usuarios (username, password, nombre, email) VALUES
-('alejandro', 'pass123', 'Alejandro Torres', 'alejandro@example.com'),
-('maria', 'pass456', 'María Gómez', 'maria@example.com'),
-('juan', 'pass789', 'Juan Pérez', 'juan@example.com'),
-('lucia', 'pass321', 'Lucía Fernández', 'lucia@example.com'),
-('carlos', 'pass654', 'Carlos Ruiz', 'carlos@example.com');
+INSERT INTO rol (id, name) VALUES (1, 'ADMIN');
+INSERT INTO rol (id, name) VALUES (2, 'USER');
+
+INSERT INTO usuarios (username, password, nombre, email, estado) VALUES
+('alejandro', 'pass123', 'Alejandro Torres', 'alejandro@example.com', 1),
+('maria', 'pass456', 'María Gómez', 'maria@example.com', 1),
+('juan', 'pass789', 'Juan Pérez', 'juan@example.com', 1),
+('lucia', 'pass321', 'Lucía Fernández', 'lucia@example.com', 1),
+('carlos', 'pass654', 'Carlos Ruiz', 'carlos@example.com', 1);
 
 INSERT INTO categorias (nombre) VALUES
 ('Salas'),
@@ -85,11 +155,11 @@ INSERT INTO categorias (nombre) VALUES
 ('Exteriores');
 
 INSERT INTO productos (nombre, precio, tipo, stock, descripcion, imagen, categoria_id) VALUES
-('Sofá 3 plazas', 1200.00, 'mueble', 10, 'Sofá cómodo de tela gris', 'sofa3.jpg', 1),
-('Mesa comedor madera', 850.00, 'mueble', 5, 'Mesa de roble para 6 personas', 'mesa_comedor.jpg', 2),
-('Silla ergonómica', 450.00, 'silla', 20, 'Silla de oficina con soporte lumbar', 'silla_ergonomica.jpg', 4),
-('Cama matrimonial', 1500.00, 'mueble', 7, 'Cama con base de madera y colchón incluido', 'cama.jpg', 3),
-('Banco de jardín', 300.00, 'mueble', 12, 'Banco de metal para exteriores', 'banco_jardin.jpg', 5);
+('Sofá 3 plazas', 1200.00, 'mueble', 100, 'Sofá cómodo de tela gris', 'sofa3.jpg', 1),
+('Mesa comedor madera', 850.00, 'mueble', 105, 'Mesa de roble para 6 personas', 'mesa_comedor.jpg', 2),
+('Silla ergonómica', 450.00, 'silla', 120, 'Silla de oficina con soporte lumbar', 'silla_ergonomica.jpg', 4),
+('Cama matrimonial', 1500.00, 'mueble', 107, 'Cama con base de madera y colchón incluido', 'cama.jpg', 3),
+('Banco de jardín', 300.00, 'mueble', 112, 'Banco de metal para exteriores', 'banco_jardin.jpg', 5);
 
 INSERT INTO ventas (usuario_id, total) VALUES
 (1, 1650.00),
@@ -120,8 +190,7 @@ DELIMITER $$
 CREATE  PROCEDURE sp_descontar_producto (
   IN p_id_producto INT,
   IN p_cantidad INT,
-  IN p_precio_unitario DECIMAL(10,2),
-  IN p_usuario VARCHAR(50)
+  IN p_precio_unitario DECIMAL(10,2)
 )
 BEGIN
   -- Validar que el producto existe y tiene suficiente stock
@@ -195,38 +264,6 @@ END$$
 DELIMITER ;
 
 --
-
--- Declarar variable para capturar el ID de la venta
-SET @usuario_id = 1;
-SET @total = 1650.00;
-SET @id_venta = 0;
-
--- Llamar al procedimiento
-CALL sp_registrar_venta(@usuario_id, @total, @id_venta);
-
--- Ver el ID generado
-SELECT @id_venta;
-select*from ventas;
-
--- -----------
-
-SET @venta_id = @id_venta;
-SET @producto_id = 1;
-SET @cantidad = 1;
-SET @precio_unitario = 1200.00;
-
-CALL sp_registrar_detalle_venta(@venta_id, @producto_id, @cantidad, @precio_unitario);
-
--- --------------
-
-SET @id_producto = 1;
-SET @cantidad = 1;
-SET @precio_unitario = 1200.00;
-SET @usuario = 'alejandro';
-
-CALL sp_descontar_producto(@id_producto, @cantidad, @precio_unitario, @usuario);
-
-select * from productos;
 
 
 
