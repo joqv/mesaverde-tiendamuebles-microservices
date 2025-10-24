@@ -94,7 +94,22 @@ services:
     depends_on:
       - eureka-server
       - config-server
-
+  
+  auth-service:
+      container_name: auth_service
+      build:
+        context: .
+        dockerfile: ./auth-service/Dockerfile
+      ports:
+        - "9000:9000"
+      restart: always
+      networks:
+        - net_mesaverde_ms
+      depends_on:
+        - config-server
+        - db
+        - eureka-server
+  
 volumes:
   mysql_data_tm:
 
