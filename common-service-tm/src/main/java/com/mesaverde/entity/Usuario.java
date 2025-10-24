@@ -6,12 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
+import java.util.Set;
+
+
 @Table(name = "usuarios")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Usuario {
 
     @Id
@@ -21,4 +24,9 @@ public class Usuario {
     private String password;
     private String nombre;
     private String email;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name="usuario_id"), inverseJoinColumns = @JoinColumn(name="rol_id"))
+    private Set<Rol> roles;
+    private short estado;
 }
