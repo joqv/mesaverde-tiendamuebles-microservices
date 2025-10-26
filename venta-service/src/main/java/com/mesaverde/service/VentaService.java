@@ -4,6 +4,7 @@ import com.error.springerrorhandler.exceptions.BusinessException;
 import com.mesaverde.client.ClienteClient;
 import com.mesaverde.client.ProductoClient;
 import com.mesaverde.dto.response.VentaResponse;
+import com.mesaverde.entity.Auditoria;
 import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Producto;
 import com.mesaverde.entity.Venta;
@@ -13,8 +14,11 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,9 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final ClienteClient clienteClient;
     private final ProductoClient productoClient;
+
+    @Autowired
+    private MessageProducerService messageProducerService;
     
     public List<Producto> todosProductos(){
     	return ventaRepository.todosProductos();
@@ -81,6 +88,17 @@ public class VentaService {
                 detalle.getPrecioUnitario()
             );
         }
+
+        Optional<Venta> ventaAuditoria = ventaRepository.findById(ventaId);
+
+        Auditoria auditoria = new Auditoria();
+
+        auditoria.setVentaId(ventaId);
+        auditoria.setTotal(ventaAuditoria.get().getTotal());
+        auditoria.setFecha(Instant.now());
+
+        messageProducerService.sendMessage(auditoria);
+
     }
 
     //Ingresa al fallback cuando se termina los reintentos

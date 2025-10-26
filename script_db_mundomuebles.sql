@@ -4,6 +4,13 @@ SET CHARACTER SET utf8mb4;
 CREATE DATABASE IF NOT EXISTS mundomuebles;
 USE mundomuebles;
 
+CREATE TABLE auditoria (
+    auditoria_id INT AUTO_INCREMENT PRIMARY KEY,
+    venta_id INT NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    fecha TIMESTAMP NOT NULL
+);
+
 CREATE TABLE rol (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
@@ -264,10 +271,4 @@ END$$
 DELIMITER ;
 
 --
-
-
-
-
-
-
 
