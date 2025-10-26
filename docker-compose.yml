@@ -39,62 +39,17 @@ services:
       - net_mesaverde_ms
     depends_on:
       - config-server
-  
-  producto-service:
-    container_name: producto_service
-    build:
-      context: .
-      dockerfile: ./producto-service/Dockerfile
-    restart: always
-    networks:
-      - net_mesaverde_ms
-    depends_on:
-      - config-server
-      - eureka-server
-      - db
-  
 
-  cliente-service:
-    container_name: cliente_service
-    build:
-      context: .
-      dockerfile: ./cliente-service/Dockerfile
-    restart: always
-    networks:
-      - net_mesaverde_ms
-    depends_on:
-      - config-server
-      - eureka-server
-      - db
-  
-  venta-service:
-    container_name: venta_service
-    build:
-      context: .
-      dockerfile: ./venta-service/Dockerfile
-    restart: always
-    networks:
-      - net_mesaverde_ms
-    depends_on:
-      - config-server
-      - eureka-server
-      - db
-      - producto-service
-      - cliente-service
-
-  api-gateway:
-    container_name: api_gateway
-    build:
-      context: ./api-gateway
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
     ports:
-      - "8080:8080"
+      - "5672:5672"
+      - "15672:15672"
     restart: always
     networks:
       - net_mesaverde_ms
-    depends_on:
-      - eureka-server
-      - config-server
-  
+
   auth-service:
       container_name: auth_service
       build:
@@ -109,7 +64,77 @@ services:
         - config-server
         - db
         - eureka-server
-  
+
+  producto-service:
+    container_name: producto_service
+    build:
+      context: .
+      dockerfile: ./producto-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+
+  cliente-service:
+    container_name: cliente_service
+    build:
+      context: .
+      dockerfile: ./cliente-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+
+  auditoria-service:
+    container_name: auditoria_service
+    build:
+      context: .
+      dockerfile: ./auditoria-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+      - rabbitmq
+
+  venta-service:
+    container_name: venta_service
+    build:
+      context: .
+      dockerfile: ./venta-service/Dockerfile
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - config-server
+      - eureka-server
+      - db
+      - producto-service
+      - cliente-service
+      - rabbitmq
+
+  api-gateway:
+    container_name: api_gateway
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - net_mesaverde_ms
+    depends_on:
+      - eureka-server
+      - config-server
+      - auth-service
+
 volumes:
   mysql_data_tm:
 
