@@ -7,11 +7,15 @@ import com.mesaverde.entity.DetalleVenta;
 import com.mesaverde.entity.Venta;
 import com.mesaverde.service.VentaService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -54,7 +58,7 @@ public class VentaController {
     
     
     @PostMapping("/vender")
-    public String procesarVenta(@RequestBody VentaRequest ventaRequest) {
+    public ResponseEntity<Map<String, Serializable>> procesarVenta(@RequestBody VentaRequest ventaRequest) {
         Venta venta = new Venta();
         //Fecha
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
@@ -72,11 +76,9 @@ public class VentaController {
             return detalle;
         }).collect(Collectors.toList());
 
-        String mensajeVenta = null;
+        return ventaService.procesarVenta(venta, detalles);
 
-        mensajeVenta = ventaService.procesarVenta(venta, detalles);
 
-        return mensajeVenta;
     }
 
     
