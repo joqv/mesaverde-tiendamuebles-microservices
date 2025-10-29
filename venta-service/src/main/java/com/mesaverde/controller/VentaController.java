@@ -54,7 +54,7 @@ public class VentaController {
     
     
     @PostMapping("/vender")
-    public void procesarVenta(@RequestBody VentaRequest ventaRequest) {
+    public String procesarVenta(@RequestBody VentaRequest ventaRequest) {
         Venta venta = new Venta();
         //Fecha
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
@@ -72,7 +72,11 @@ public class VentaController {
             return detalle;
         }).collect(Collectors.toList());
 
-        ventaService.procesarVenta(venta, detalles);
+        String mensajeVenta = null;
+
+        mensajeVenta = ventaService.procesarVenta(venta, detalles);
+
+        return mensajeVenta;
     }
 
     

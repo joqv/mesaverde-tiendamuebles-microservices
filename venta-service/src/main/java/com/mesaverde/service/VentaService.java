@@ -56,7 +56,7 @@ public class VentaService {
     @Transactional
     @CircuitBreaker(name = "procesarVentaRepository", fallbackMethod = "fallbackProcesarVenta")
 	@Retry(name = "procesarVentaRepository")
-    public void procesarVenta(Venta venta, List<DetalleVenta> detalles) {
+    public String procesarVenta(Venta venta, List<DetalleVenta> detalles) {
         // 1. Registrar la venta
     	Integer ventaId = ventaRepository.registrarVenta(
     		    venta.getUsuario() != null ? venta.getUsuario().getId() : null,
@@ -99,12 +99,15 @@ public class VentaService {
 
         messageProducerService.sendMessage(auditoria);
 
+
+        return "Se ha procesado la venta. Total: " + ventaAuditoria.get().getTotal();
+
     }
 
     //Ingresa al fallback cuando se termina los reintentos
-    public void fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles,Throwable ex) {
-        throw new RuntimeException("No se puede realizar la venta en este momento. Intentalo más tarde.");
-
+    public String fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles,Throwable ex) {
+    //    throw new RuntimeException("No se puede realizar la venta en este momento. Intentalo más tarde.");
+        return "No se puede procesar la venta en este momento. Intentalo más tarde.";
     }
     
 }
