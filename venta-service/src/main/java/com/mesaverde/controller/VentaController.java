@@ -4,7 +4,9 @@ import com.mesaverde.dto.request.VentaRequest;
 import com.mesaverde.dto.response.ProductoDTO;
 import com.mesaverde.dto.response.VentaResponse;
 import com.mesaverde.entity.DetalleVenta;
+import com.mesaverde.entity.Usuario;
 import com.mesaverde.entity.Venta;
+import com.mesaverde.service.UserService;
 import com.mesaverde.service.VentaService;
 
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,7 @@ import java.math.BigDecimal;
 public class VentaController {
 
     private final VentaService ventaService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public VentaResponse obtenerVenta(@PathVariable Integer id) {
@@ -64,10 +67,16 @@ public class VentaController {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime fecha = LocalDateTime.parse(ventaRequest.getFecha(), formatter);
         venta.setFecha(fecha);
+        
+        Usuario user=userService.obtenerUsuario(ventaRequest.getUsuario());
+
+        Usuario usuario = new Usuario();
+        usuario.setId(user.getId()); // o buscarlo en la BD si existe
+        venta.setUsuario(usuario);
+
         //total
         BigDecimal total = BigDecimal.valueOf(ventaRequest.getTotal());
         venta.setTotal(total);
-
         List<DetalleVenta> detalles = ventaRequest.getProductos().stream().map(p -> {
             DetalleVenta detalle = new DetalleVenta();
             detalle.setProductoId(p.getId());

@@ -9,6 +9,7 @@ public class CustomUserDetails extends org.springframework.security.core.userdet
 
     private final String username;
     private final String email;
+    
 
     public CustomUserDetails(Usuario user) {
         super(user.getUsername(), user.getPassword(), user.getRoles().stream().map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getName())).toList());
