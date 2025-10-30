@@ -3,6 +3,7 @@ package com.mesaverde.service;
 import com.error.springerrorhandler.exceptions.BusinessException;
 import com.mesaverde.client.ClienteClient;
 import com.mesaverde.client.ProductoClient;
+import com.mesaverde.dto.request.VentaRequest;
 import com.mesaverde.dto.response.VentaResponse;
 import com.mesaverde.entity.Auditoria;
 import com.mesaverde.entity.DetalleVenta;
@@ -18,7 +19,10 @@ import lombok.RequiredArgsConstructor;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +41,7 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final ClienteClient clienteClient;
     private final ProductoClient productoClient;
+    private final UserService userService;
 
     @Autowired
     private MessageProducerService messageProducerService;
@@ -64,7 +69,7 @@ public class VentaService {
     @Transactional
     @CircuitBreaker(name = "procesarVentaRepository", fallbackMethod = "fallbackProcesarVenta")
 	@Retry(name = "procesarVentaRepository")
-    public ResponseEntity<Map<String, Serializable>> procesarVenta(Venta venta, List<DetalleVenta> detalles) {
+    public ResponseEntity<Map<String, Serializable>> procesarVenta(VentaRequest ventaRequest, List<DetalleVenta> detalles) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -78,6 +83,23 @@ public class VentaService {
 
         //Usuario usuario = (Usuario) auth.getPrincipal();
         //Integer idUsuario = usuario.getId();
+
+        Venta venta = new Venta();
+        //Fecha
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        LocalDateTime fecha = LocalDateTime.parse(ventaRequest.getFecha(), formatter);
+        venta.setFecha(fecha);
+
+        Usuario user=userService.obtenerUsuario(ventaRequest.getUsuario());
+
+        Usuario usuario = new Usuario();
+        usuario.setId(user.getId()); // o buscarlo en la BD si existe
+        venta.setUsuario(usuario);
+
+        //total
+        BigDecimal total = BigDecimal.valueOf(ventaRequest.getTotal());
+        venta.setTotal(total);
+
 
         // 1. Registrar la venta
         ventaRepository.registrarVenta(
@@ -100,6 +122,7 @@ public class VentaService {
              //   detalle.getPrecioUnitario(),
              //   venta.getUsuario() != null ? venta.getUsuario().getNombre() : "sistema"
             //);
+
         	
         	
 
@@ -139,7 +162,7 @@ public class VentaService {
     //    return "No se puede procesar la venta en este momento. Intentalo más tarde.";
     //}
 
-    public ResponseEntity<Map<String, Serializable>> fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles, Throwable ex) {
+    public ResponseEntity<Map<String, Serializable>> fallbackProcesarVenta(VentaRequest ventaRequest, List<DetalleVenta> detalles, Throwable ex) {
         Map<String, Serializable> body = Map.of(
                 "mensaje", "CB. No se puede procesar la venta en este momento. Inténtalo más tarde.",
                 "error", ex.getMessage()
