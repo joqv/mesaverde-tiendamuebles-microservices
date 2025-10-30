@@ -141,7 +141,7 @@ public class VentaService {
 
     public ResponseEntity<Map<String, Serializable>> fallbackProcesarVenta(Venta venta, List<DetalleVenta> detalles, Throwable ex) {
         Map<String, Serializable> body = Map.of(
-                "mensaje", "No se puede procesar la venta en este momento. Inténtalo más tarde.",
+                "mensaje", "CB. No se puede procesar la venta en este momento. Inténtalo más tarde.",
                 "error", ex.getMessage()
         );
         return ResponseEntity.status(503).body(body);
