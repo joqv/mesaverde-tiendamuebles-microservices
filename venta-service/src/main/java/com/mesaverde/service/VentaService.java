@@ -81,8 +81,8 @@ public class VentaService {
 
         // 1. Registrar la venta
         ventaRepository.registrarVenta(
+        		venta.getUsuario().getId(),
                 //venta.getUsuario() != null ? venta.getUsuario().getId() : null,
-                6,
                 venta.getTotal()
         );
         Integer ventaId = ventaRepository.getLastVentaId();

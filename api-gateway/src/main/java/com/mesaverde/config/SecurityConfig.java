@@ -61,12 +61,14 @@ public class SecurityConfig {
 
                         // 4. Rutas públicas
                         .pathMatchers("/auth-server/oauth2/jwks", "/oauth2/jwks").permitAll()
+                        .pathMatchers("/**").permitAll()
 
                         // 5. Proteger todas las demás rutas
                         .anyExchange().authenticated()
                 )
                 // 6. Configuración JWT (Esto es correcto y está funcionando)
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                ;
 
         return http.build();
     }

@@ -7,6 +7,9 @@ public class VentaRequest {
     private String fecha;
     private Double total;
 
+
+	private String usuario;
+
     // Getters y setters
     public List<ProductoRequest> getProductos() {
         return productos;
@@ -31,4 +34,13 @@ public class VentaRequest {
     public void setTotal(Double total) {
         this.total = total;
     }
+
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
 }
